@@ -25,9 +25,9 @@ public class BasicCopyMachine : MonoBehaviour {
         {
             return;
         }
-        if (maxDepth == 0)
+        if (currentDepth == 0)
         {
-            lowerLeft = transform.position - volume/2;
+            lowerLeft = transform.position - volume/2.0f;
         }
 
 
