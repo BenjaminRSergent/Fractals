@@ -27,11 +27,19 @@ public class CreateTriangle : MonoBehaviour
         _indices[2] = 2;
         _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
 
-        for(int iteration = 0; iteration < numIterations; iteration++)
+
+        StartCoroutine(GenerationRoutine());
+
+    }
+
+    IEnumerator GenerationRoutine()
+    {
+        WaitForSeconds wait = new WaitForSeconds(0.5f);
+        for (int iteration = 0; iteration < numIterations; iteration++)
         {
+            yield return wait;
             Iterate();
         }
-        
     }
 
     void Iterate()
