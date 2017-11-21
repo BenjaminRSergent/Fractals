@@ -87,7 +87,7 @@ public class CreatePyramid : MonoBehaviour
         {
             int indexOffset = pyramid * INDICES_PER_PYRAMID;
             int vertOffset = _vertices.Count;
-            
+
             Vector3 vertA = previousVerts[previousIndices[indexOffset]];
             Vector3 vertB = previousVerts[previousIndices[indexOffset + 1]];
             Vector3 vertC = previousVerts[previousIndices[indexOffset + 2]];
@@ -97,14 +97,14 @@ public class CreatePyramid : MonoBehaviour
             _vertices.Add(vertB);
             _vertices.Add(vertC);
             _vertices.Add(vertD);
-            _vertices.Add((vertA + vertB) / RandomDiv(2.0f));
-            _vertices.Add((vertB + vertC) / RandomDiv(2.0f));
-            _vertices.Add((vertC + vertA) / RandomDiv(2.0f));
-            _vertices.Add((vertA + vertD) / RandomDiv(2.0f));
-            _vertices.Add((vertB + vertD) / RandomDiv(2.0f));
-            _vertices.Add((vertC + vertD) / RandomDiv(2.0f));
+            _vertices.Add((vertA + vertB) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertB + vertC) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertC + vertA) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertA + vertD) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertB + vertD) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertC + vertD) / 2.0f + RandomOffset(wobble));
 
-            AddPyramidIndices(vertOffset, vertOffset+4, vertOffset+6, vertOffset+7, ref indicesIndex);
+            AddPyramidIndices(vertOffset, vertOffset + 4, vertOffset + 6, vertOffset + 7, ref indicesIndex);
             AddPyramidIndices(vertOffset + 4, vertOffset + 1, vertOffset + 5, vertOffset + 8, ref indicesIndex);
             AddPyramidIndices(vertOffset + 6, vertOffset + 5, vertOffset + 2, vertOffset + 9, ref indicesIndex);
             AddPyramidIndices(vertOffset + 7, vertOffset + 8, vertOffset + 9, vertOffset + 3, ref indicesIndex);
@@ -130,6 +130,10 @@ public class CreatePyramid : MonoBehaviour
         _indices[index++] = upIndex;
         _indices[index++] = leftIndex;
         _indices[index++] = forwardIndex;
+    }
+    private Vector3 RandomOffset(float maxOffset)
+    {
+        return Random.onUnitSphere * maxOffset * 2 * (RandomGaussian() - 0.5f);
     }
 
     private float RandomDiv(float divBase)
