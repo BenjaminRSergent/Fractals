@@ -78,7 +78,7 @@ public class CreateTriangle : MonoBehaviour
         {
             int indexOffset = triangle * 3;
 
-            // Use the indices the triplets which define each triangle
+            // Use the indices to find the vertex triplets which define each triangle
             Vector3 vertA = previousVerts[previousIndices[indexOffset]];
             Vector3 vertB = previousVerts[previousIndices[indexOffset + 1]];
             Vector3 vertC = previousVerts[previousIndices[indexOffset + 2]];

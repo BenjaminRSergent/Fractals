@@ -90,6 +90,8 @@ public class CreatePyramid : MonoBehaviour
             int indexOffset = pyramid * INDICES_PER_PYRAMID;
             int vertOffset = _vertices.Count;
 
+            // AddPyramidIndices is written to ensure the first three indices of each
+            // pyramid are the base vertices followed by the point
             Vector3 vertA = previousVerts[previousIndices[indexOffset]];
             Vector3 vertB = previousVerts[previousIndices[indexOffset + 1]];
             Vector3 vertC = previousVerts[previousIndices[indexOffset + 2]];
@@ -119,6 +121,8 @@ public class CreatePyramid : MonoBehaviour
 
     void AddPyramidIndices(int leftIndex, int rightIndex, int forwardIndex, int upIndex, ref int index)
     {
+        // The fact that the first four vertices are the base (left, right, forward) followed by the point (up)
+        // is used elsewhere.
         _indices[index++] = leftIndex;
         _indices[index++] = rightIndex;
         _indices[index++] = forwardIndex;
