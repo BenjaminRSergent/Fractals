@@ -129,18 +129,23 @@ public class CreatePyramid : MonoBehaviour
     {
         // The fact that the first four vertices are the base (left, right, forward) followed by the point (up)
         // is used elsewhere.
+
+        // The base
         _indices[index++] = leftIndex;
         _indices[index++] = rightIndex;
         _indices[index++] = forwardIndex;
 
+        // The front facing side
         _indices[index++] = upIndex;
         _indices[index++] = rightIndex;
         _indices[index++] = leftIndex;
 
+        // The right facing side
         _indices[index++] = upIndex;
         _indices[index++] = forwardIndex;
         _indices[index++] = rightIndex;
 
+        // The left facing side
         _indices[index++] = upIndex;
         _indices[index++] = leftIndex;
         _indices[index++] = forwardIndex;
