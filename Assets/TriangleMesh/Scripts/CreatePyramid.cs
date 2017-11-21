@@ -11,16 +11,10 @@ public class CreatePyramid : MonoBehaviour
     public int numIterations = 4;
     private Mesh _mesh;
     private List<Vector3> _vertices = new List<Vector3>();
-    private int _currRandomIndex = 0;
     private int[] _indices;
-    private float[] _randomNumbers = new float[81];
 
     void Start()
     {
-        for (int index = 0; index < _randomNumbers.Length; index++)
-        {
-            _randomNumbers[index] = RandomGaussian();
-        }
         StartCoroutine(GenerationRoutine());
     }
 
@@ -97,12 +91,12 @@ public class CreatePyramid : MonoBehaviour
             _vertices.Add(vertB);
             _vertices.Add(vertC);
             _vertices.Add(vertD);
-            _vertices.Add((vertA + vertB) / 2.0f + RandomOffset(wobble));
-            _vertices.Add((vertB + vertC) / 2.0f + RandomOffset(wobble));
-            _vertices.Add((vertC + vertA) / 2.0f + RandomOffset(wobble));
-            _vertices.Add((vertA + vertD) / 2.0f + RandomOffset(wobble));
-            _vertices.Add((vertB + vertD) / 2.0f + RandomOffset(wobble));
-            _vertices.Add((vertC + vertD) / 2.0f + RandomOffset(wobble));
+            _vertices.Add((vertA + vertB) / 2.0f + RandomUtils.RandomOffset(wobble));
+            _vertices.Add((vertB + vertC) / 2.0f + RandomUtils.RandomOffset(wobble));
+            _vertices.Add((vertC + vertA) / 2.0f + RandomUtils.RandomOffset(wobble));
+            _vertices.Add((vertA + vertD) / 2.0f + RandomUtils.RandomOffset(wobble));
+            _vertices.Add((vertB + vertD) / 2.0f + RandomUtils.RandomOffset(wobble));
+            _vertices.Add((vertC + vertD) / 2.0f + RandomUtils.RandomOffset(wobble));
 
             AddPyramidIndices(vertOffset, vertOffset + 4, vertOffset + 6, vertOffset + 7, ref indicesIndex);
             AddPyramidIndices(vertOffset + 4, vertOffset + 1, vertOffset + 5, vertOffset + 8, ref indicesIndex);
@@ -131,26 +125,7 @@ public class CreatePyramid : MonoBehaviour
         _indices[index++] = leftIndex;
         _indices[index++] = forwardIndex;
     }
-    private Vector3 RandomOffset(float maxOffset)
-    {
-        return Random.onUnitSphere * maxOffset * 2 * (RandomGaussian() - 0.5f);
-    }
 
-    private float RandomDiv(float divBase)
-    {
-        _currRandomIndex = (_currRandomIndex + 1) % _randomNumbers.Length;
-        float offset = wobble * (_randomNumbers[_currRandomIndex] - 0.5f);
-        return divBase + offset;
-    }
-
-    private float RandomGaussian()
-    {
-        // See http://www.design.caltech.edu/erik/Misc/Gaussian.html
-        float x1 = Random.Range(0, 1.0f);
-        float x2 = Random.Range(0, 1.0f);
-
-        return Mathf.Sqrt(-2 * Mathf.Log(x1)) * Mathf.Cos(2 * Mathf.PI * x2);
-    }
 
     private void OnDrawGizmos()
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -9,18 +10,13 @@ public class CreateTriangle : MonoBehaviour
     public float wobble = 0.01f;
     public bool waitBetweenIter = false;
     public int numIterations = 4;
+
     private Mesh _mesh;
     private List<Vector3> _vertices = new List<Vector3>();
-    private int _currRandomIndex = 0;
     private int[] _indices;
-    private float[] _randomNumbers = new float[81];
 
     void Start()
     {
-        for(int index = 0; index < _randomNumbers.Length; index++)
-        {
-            _randomNumbers[index] = RandomGaussian();
-        }
         StartCoroutine(GenerationRoutine());
     }
 
@@ -30,22 +26,7 @@ public class CreateTriangle : MonoBehaviour
         while (true)
         {
             WaitForSeconds wait = new WaitForSeconds(1 / fps);
-            _currRandomIndex++;
-            _mesh = new Mesh();
-
-            _mesh.name = "Triangle";
-            GetComponent<MeshFilter>().mesh = _mesh;
-            _vertices = new List<Vector3>();
-            _vertices.Add(new Vector3(-1, 0, 0));
-            _vertices.Add(new Vector3(0, Mathf.Sqrt(3), 0));
-            _vertices.Add(new Vector3(1, 0, 0));
-            _mesh.SetVertices(_vertices);
-
-            _indices = new int[3];
-            _indices[0] = 0;
-            _indices[1] = 1;
-            _indices[2] = 2;
-            _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
+            CreateInitialTriangle();
 
             for (int iteration = 0; iteration < numIterations; iteration++)
             {
@@ -57,6 +38,25 @@ public class CreateTriangle : MonoBehaviour
             }
             yield return wait;
         }
+    }
+
+    private void CreateInitialTriangle()
+    {
+        _mesh = new Mesh();
+
+        _mesh.name = "Triangle";
+        GetComponent<MeshFilter>().mesh = _mesh;
+        _vertices = new List<Vector3>();
+        _vertices.Add(new Vector3(-1, 0, 0));
+        _vertices.Add(new Vector3(0, Mathf.Sqrt(3), 0));
+        _vertices.Add(new Vector3(1, 0, 0));
+        _mesh.SetVertices(_vertices);
+
+        _indices = new int[3];
+        _indices[0] = 0;
+        _indices[1] = 1;
+        _indices[2] = 2;
+        _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
     }
 
     void Iterate()
@@ -82,9 +82,9 @@ public class CreateTriangle : MonoBehaviour
             _vertices.Add(vertA);
             _vertices.Add(vertB);
             _vertices.Add(vertC);
-            _vertices.Add((vertC + vertA) / RandomDiv(2.0f));
-            _vertices.Add((vertA + vertB) / RandomDiv(2.0f));
-            _vertices.Add((vertB + vertC) / RandomDiv(2.0f));
+            _vertices.Add((vertC + vertA) / RandomUtils.RandomDiv(2.0f, wobble));
+            _vertices.Add((vertA + vertB) / RandomUtils.RandomDiv(2.0f, wobble));
+            _vertices.Add((vertB + vertC) / RandomUtils.RandomDiv(2.0f, wobble));
             
 
             _indices[indicesIndex++] = newVertexStart;
@@ -99,22 +99,6 @@ public class CreateTriangle : MonoBehaviour
         }
         _mesh.SetVertices(_vertices);
         _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
-    }
-
-    private float RandomDiv(float divBase)
-    {
-        _currRandomIndex = (_currRandomIndex + 1) % _randomNumbers.Length;
-        float offset = wobble * (_randomNumbers[_currRandomIndex] - 0.5f);
-        return divBase + offset;
-    }
-
-    private float RandomGaussian()
-    {
-        // See http://www.design.caltech.edu/erik/Misc/Gaussian.html
-        float x1 = Random.Range(0, 1.0f);
-        float x2 = Random.Range(0, 1.0f);
-
-        return Mathf.Sqrt(-2 * Mathf.Log(x1)) * Mathf.Cos(2 * Mathf.PI * x2);
     }
 
     private void OnDrawGizmos()
