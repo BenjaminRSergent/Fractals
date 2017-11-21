@@ -13,6 +13,16 @@ public class CreatePyramid : MonoBehaviour
     private List<Vector3> _vertices = new List<Vector3>();
     private int[] _indices;
 
+
+    // Three for the base and the point
+    const int VERT_PER_PYRAMID = 4;
+    // Each vertex is involved in three seperate triangles. Thus, 3 indices per vertex is
+    // used to make a pyramid
+    const int INDICES_PER_VERT = 3;
+    const int INDICES_PER_PYRAMID = VERT_PER_PYRAMID * INDICES_PER_VERT;
+    // Number of new pyramids per existing pyramid during iteration
+    const int PYRAMIDS_PER_PYRAMID = 4;
+
     void Start()
     {
         StartCoroutine(GenerationRoutine());
@@ -40,11 +50,11 @@ public class CreatePyramid : MonoBehaviour
     void CreateInitialPyramid()
     {
         _mesh = new Mesh();
-
         _mesh.name = "Pyramid";
         GetComponent<MeshFilter>().mesh = _mesh;
+
         _vertices = new List<Vector3>();
-        _indices = new int[12];
+        _indices = new int[INDICES_PER_PYRAMID];
 
         int startVertex = _vertices.Count;
 
@@ -77,10 +87,6 @@ public class CreatePyramid : MonoBehaviour
         int prevNumPyramids = Mathf.Max(1, 2 * previousVerts.Count / 5);
 
         // Every pyramid has 4 vertices and 12 indices (4 triangles)
-        const int VERT_PER_PYRAMID = 4;
-        const int INDICES_PER_VERT = 3;
-        const int INDICES_PER_PYRAMID = VERT_PER_PYRAMID * INDICES_PER_VERT;
-        const int PYRAMIDS_PER_PYRAMID = 4;
         int newPyramidCount = prevNumPyramids * PYRAMIDS_PER_PYRAMID;
         _indices = new int[newPyramidCount * INDICES_PER_PYRAMID];
 
