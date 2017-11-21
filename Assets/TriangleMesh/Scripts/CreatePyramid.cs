@@ -26,11 +26,21 @@ public class CreatePyramid : MonoBehaviour
 
     IEnumerator GenerationRoutine()
     {
+        while (true)
+        {
+            WaitForSeconds wait = new WaitForSeconds(1 / fps);
+            CreateInitialPyramid();
 
-        WaitForSeconds wait = new WaitForSeconds(1 / fps);
-        CreateInitialPyramid();
-
-        yield break;
+            for (int iteration = 0; iteration < numIterations; iteration++)
+            {
+                if (waitBetweenIter)
+                {
+                    yield return wait;
+                }
+                Iterate();
+            }
+            yield return wait;
+        }
     }
 
     void CreateInitialPyramid()
@@ -52,21 +62,7 @@ public class CreatePyramid : MonoBehaviour
 
         int index = 0;
 
-        _indices[index++] = 0;
-        _indices[index++] = 1;
-        _indices[index++] = 2;
-
-        _indices[index++] = 3;
-        _indices[index++] = 1;
-        _indices[index++] = 0;
-
-        _indices[index++] = 3;
-        _indices[index++] = 2;
-        _indices[index++] = 1;
-
-        _indices[index++] = 3;
-        _indices[index++] = 0;
-        _indices[index++] = 2;
+        AddPyramidIndices(0, 1, 2, 3, ref index);
 
         _mesh.SetVertices(_vertices);
         _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
@@ -77,41 +73,63 @@ public class CreatePyramid : MonoBehaviour
         var previousVerts = _vertices;
         var previousIndices = _indices;
         _vertices = new List<Vector3>();
-        int prevNumTriangles = previousVerts.Count / 2;
+        int prevNumPyramids = Mathf.Max(1, 2 * previousVerts.Count / 5);
 
-        _indices = new int[prevNumTriangles * 9];
+        const int VERT_PER_PYRAMID = 4;
+        const int INDICES_PER_VERT = 3;
+        const int INDICES_PER_PYRAMID = VERT_PER_PYRAMID * INDICES_PER_VERT;
+        const int PYRAMIDS_PER_PYRAMID = 4;
+        int newPyramidCount = prevNumPyramids * PYRAMIDS_PER_PYRAMID;
+        _indices = new int[newPyramidCount * INDICES_PER_PYRAMID];
 
         int indicesIndex = 0;
-        for (int triangle = 0; triangle < prevNumTriangles; triangle++)
+        for (int pyramid = 0; pyramid < prevNumPyramids; pyramid++)
         {
-            int indexOffset = triangle * 3;
-
+            int indexOffset = pyramid * INDICES_PER_PYRAMID;
+            int vertOffset = _vertices.Count;
+            
             Vector3 vertA = previousVerts[previousIndices[indexOffset]];
             Vector3 vertB = previousVerts[previousIndices[indexOffset + 1]];
             Vector3 vertC = previousVerts[previousIndices[indexOffset + 2]];
-
-            int newVertexStart = _vertices.Count;
+            Vector3 vertD = previousVerts[previousIndices[indexOffset + 3]];
 
             _vertices.Add(vertA);
             _vertices.Add(vertB);
             _vertices.Add(vertC);
-            _vertices.Add((vertC + vertA) / RandomDiv(2.0f));
+            _vertices.Add(vertD);
             _vertices.Add((vertA + vertB) / RandomDiv(2.0f));
             _vertices.Add((vertB + vertC) / RandomDiv(2.0f));
+            _vertices.Add((vertC + vertA) / RandomDiv(2.0f));
+            _vertices.Add((vertA + vertD) / RandomDiv(2.0f));
+            _vertices.Add((vertB + vertD) / RandomDiv(2.0f));
+            _vertices.Add((vertC + vertD) / RandomDiv(2.0f));
 
-
-            _indices[indicesIndex++] = newVertexStart;
-            _indices[indicesIndex++] = newVertexStart + 4;
-            _indices[indicesIndex++] = newVertexStart + 3;
-            _indices[indicesIndex++] = newVertexStart + 4;
-            _indices[indicesIndex++] = newVertexStart + 1;
-            _indices[indicesIndex++] = newVertexStart + 5;
-            _indices[indicesIndex++] = newVertexStart + 5;
-            _indices[indicesIndex++] = newVertexStart + 2;
-            _indices[indicesIndex++] = newVertexStart + 3;
+            AddPyramidIndices(vertOffset, vertOffset+4, vertOffset+6, vertOffset+7, ref indicesIndex);
+            AddPyramidIndices(vertOffset + 4, vertOffset + 1, vertOffset + 5, vertOffset + 8, ref indicesIndex);
+            AddPyramidIndices(vertOffset + 6, vertOffset + 5, vertOffset + 2, vertOffset + 9, ref indicesIndex);
+            AddPyramidIndices(vertOffset + 7, vertOffset + 8, vertOffset + 9, vertOffset + 3, ref indicesIndex);
         }
         _mesh.SetVertices(_vertices);
         _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
+    }
+
+    void AddPyramidIndices(int leftIndex, int rightIndex, int forwardIndex, int upIndex, ref int index)
+    {
+        _indices[index++] = leftIndex;
+        _indices[index++] = rightIndex;
+        _indices[index++] = forwardIndex;
+
+        _indices[index++] = upIndex;
+        _indices[index++] = rightIndex;
+        _indices[index++] = leftIndex;
+
+        _indices[index++] = upIndex;
+        _indices[index++] = forwardIndex;
+        _indices[index++] = rightIndex;
+
+        _indices[index++] = upIndex;
+        _indices[index++] = leftIndex;
+        _indices[index++] = forwardIndex;
     }
 
     private float RandomDiv(float divBase)
