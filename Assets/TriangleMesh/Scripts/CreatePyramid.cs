@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class CreateTriangle : MonoBehaviour
+public class CreatePyramid : MonoBehaviour
 {
     public float fps = 60.0f;
     public float wobble = 0.01f;
@@ -17,7 +17,7 @@ public class CreateTriangle : MonoBehaviour
 
     void Start()
     {
-        for(int index = 0; index < _randomNumbers.Length; index++)
+        for (int index = 0; index < _randomNumbers.Length; index++)
         {
             _randomNumbers[index] = RandomGaussian();
         }
@@ -27,36 +27,49 @@ public class CreateTriangle : MonoBehaviour
     IEnumerator GenerationRoutine()
     {
 
-        while (true)
-        {
-            WaitForSeconds wait = new WaitForSeconds(1 / fps);
-            _currRandomIndex++;
-            _mesh = new Mesh();
+        WaitForSeconds wait = new WaitForSeconds(1 / fps);
+        CreateInitialPyramid();
 
-            _mesh.name = "Triangle";
-            GetComponent<MeshFilter>().mesh = _mesh;
-            _vertices = new List<Vector3>();
-            _vertices.Add(new Vector3(-1, 0, 0));
-            _vertices.Add(new Vector3(0, Mathf.Sqrt(3), 0));
-            _vertices.Add(new Vector3(1, 0, 0));
-            _mesh.SetVertices(_vertices);
+        yield break;
+    }
 
-            _indices = new int[3];
-            _indices[0] = 0;
-            _indices[1] = 1;
-            _indices[2] = 2;
-            _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
+    void CreateInitialPyramid()
+    {
+        _mesh = new Mesh();
 
-            for (int iteration = 0; iteration < numIterations; iteration++)
-            {
-                if(waitBetweenIter)
-                {
-                    yield return wait;
-                }
-                Iterate();
-            }
-            yield return wait;
-        }
+        _mesh.name = "Quad";
+        GetComponent<MeshFilter>().mesh = _mesh;
+        _vertices = new List<Vector3>();
+        _indices = new int[12];
+
+        int startVertex = _vertices.Count;
+        _vertices.Add(Vector3.left);
+        _vertices.Add(Vector3.right);
+        float forwardLen = Mathf.Sqrt(3);
+        _vertices.Add(Vector3.forward * forwardLen);
+        float upwardLen = Mathf.Sqrt(4 - Mathf.Pow(forwardLen, 2.0f));
+        _vertices.Add(Vector3.forward * forwardLen / 2.0f + Vector3.up * upwardLen);
+
+        int index = 0;
+
+        _indices[index++] = 0;
+        _indices[index++] = 1;
+        _indices[index++] = 2;
+
+        _indices[index++] = 3;
+        _indices[index++] = 1;
+        _indices[index++] = 0;
+
+        _indices[index++] = 3;
+        _indices[index++] = 2;
+        _indices[index++] = 1;
+
+        _indices[index++] = 3;
+        _indices[index++] = 0;
+        _indices[index++] = 2;
+
+        _mesh.SetVertices(_vertices);
+        _mesh.SetIndices(_indices, MeshTopology.Triangles, 0);
     }
 
     void Iterate()
@@ -85,7 +98,7 @@ public class CreateTriangle : MonoBehaviour
             _vertices.Add((vertC + vertA) / RandomDiv(2.0f));
             _vertices.Add((vertA + vertB) / RandomDiv(2.0f));
             _vertices.Add((vertB + vertC) / RandomDiv(2.0f));
-            
+
 
             _indices[indicesIndex++] = newVertexStart;
             _indices[indicesIndex++] = newVertexStart + 4;
