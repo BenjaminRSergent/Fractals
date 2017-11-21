@@ -47,11 +47,18 @@ public class CreatePyramid : MonoBehaviour
         _indices = new int[12];
 
         int startVertex = _vertices.Count;
+
+        // The height of the equilateral base
+        float forwardLen = Mathf.Sqrt(3);
+        // The pyramid height which makes the side triangles all equilateral with side length 2
+        float upwardLen = Mathf.Sqrt(4 - Mathf.Pow(forwardLen, 2.0f));
+
+        // The base
         _vertices.Add(Vector3.left);
         _vertices.Add(Vector3.right);
-        float forwardLen = Mathf.Sqrt(3);
         _vertices.Add(Vector3.forward * forwardLen);
-        float upwardLen = Mathf.Sqrt(4 - Mathf.Pow(forwardLen, 2.0f));
+        
+        // The point
         _vertices.Add(Vector3.forward * forwardLen / 2.0f + Vector3.up * upwardLen);
 
         int index = 0;
@@ -69,6 +76,7 @@ public class CreatePyramid : MonoBehaviour
         _vertices = new List<Vector3>();
         int prevNumPyramids = Mathf.Max(1, 2 * previousVerts.Count / 5);
 
+        // Every pyramid has 4 vertices and 12 indices (4 triangles)
         const int VERT_PER_PYRAMID = 4;
         const int INDICES_PER_VERT = 3;
         const int INDICES_PER_PYRAMID = VERT_PER_PYRAMID * INDICES_PER_VERT;
@@ -87,6 +95,8 @@ public class CreatePyramid : MonoBehaviour
             Vector3 vertC = previousVerts[previousIndices[indexOffset + 2]];
             Vector3 vertD = previousVerts[previousIndices[indexOffset + 3]];
 
+            // Every vertex in the previous pyramid is included plus a new vertex half way between
+            // each previous edge
             _vertices.Add(vertA);
             _vertices.Add(vertB);
             _vertices.Add(vertC);
