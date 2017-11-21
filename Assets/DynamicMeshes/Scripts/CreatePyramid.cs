@@ -41,7 +41,7 @@ public class CreatePyramid : MonoBehaviour
     {
         _mesh = new Mesh();
 
-        _mesh.name = "Quad";
+        _mesh.name = "Pyramid";
         GetComponent<MeshFilter>().mesh = _mesh;
         _vertices = new List<Vector3>();
         _indices = new int[12];
