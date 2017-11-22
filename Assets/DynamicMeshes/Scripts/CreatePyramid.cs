@@ -64,12 +64,12 @@ public class CreatePyramid : MonoBehaviour
         float upwardLen = Mathf.Sqrt(4 - Mathf.Pow(forwardLen, 2.0f));
 
         // The base
-        _vertices.Add(Vector3.left);
-        _vertices.Add(Vector3.right);
-        _vertices.Add(Vector3.forward * forwardLen);
-        
+        _vertices.Add(Vector3.left - Vector3.forward * forwardLen / 2);
+        _vertices.Add(Vector3.right - Vector3.forward * forwardLen / 2);
+        _vertices.Add(Vector3.forward * forwardLen / 2);
+
         // The point
-        _vertices.Add(Vector3.forward * forwardLen / 2.0f + Vector3.up * upwardLen);
+        _vertices.Add(Vector3.up * upwardLen);
 
         int index = 0;
 
